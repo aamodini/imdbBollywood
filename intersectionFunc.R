@@ -1,5 +1,5 @@
-# source("functions.R")
-# source("Get.Unique.NameID.R")
+source("functions.R")
+source("Get.Unique.NameID.R")
 
 # name.input <- c("Ameeta", "Nasir Hussain")
 # title.input <- c("Rishte Naahte","Koi Tujh Sa Kahan")

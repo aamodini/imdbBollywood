@@ -1,12 +1,17 @@
-# imdbBollywood
-Using data from IMDb to find influential spheres in Indian cinema
+# Libraries and Data ---------------------------------------------------------------
+library(sqldf)
+library(readr)
+library(data.table)
 
-A list of functions that are created:
+# principal<-as.data.frame(fread("title.principals.tsv"))
+# crew <- as.data.frame(fread("rawData/title.crew.tsv"))
 
-Found in functionsTitle.R
+# akas <- as.data.frame(fread("title.akas.tsv"))
+# title.basic <- as.data.frame(fread("title.basics.tsv"))
+# name.basic <- as.data.frame(fread("name.basics.tsv"))
+# staff_movie <- as.data.frame(fread("staff_movie.tsv"))
 
-1. get.nameID - this function takes a character name input (provided by the user). The dataset name.basic
-
+# Name to NameID ----------------------------------------------------------
 
 get.nameID <- function (name.input) {
   name.matrix <- matrix(NA, 1, length(name.input)) # matrix for storage
@@ -78,4 +83,12 @@ get.title <- function(titleID){
   
   return(title.name)
 }
+
+
+
+
+
+
+
+
 
