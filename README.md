@@ -1,81 +1,41 @@
 # imdbBollywood
 Using data from IMDb to find influential spheres in Indian cinema
 
-A list of functions that are created:
+## Datasets:
 
-Found in functionsTitle.R
+1. IMDb - https://www.imdb.com/interfaces/
+The description of the 7 dataset used in this are listed on IMDb at this link.
 
-1. get.nameID - this function takes a character name input (provided by the user). The dataset name.basic
+2. `staff_movies` - Assuming a list of movies that are known to be of Indian origin, the dataset `title.principals` was used to extract a list of nameIDs. The columns in this dataset are nameIDs and each row corresponds to the movie title each nameID has worked in.
 
+3. `IC-nodes` - Dataset listing the names and nameIDs of people and the families they belong to.
 
-get.nameID <- function (name.input) {
-  name.matrix <- matrix(NA, 1, length(name.input)) # matrix for storage
-  
-  # Name in characters to nameID 
-  
-  for (i in 1:length(name.input)){
-    name.matrix[1,i] <- name.basic[which(name.basic$primaryName == name.input[i]), 1]
-  }
-  
-  return(name.matrix) # outputs 2 corresponding name IDs 
-}
+4. `edgelist_kapoor` -
 
-# NameID to Name ----------------------------------------------------------
+5. `edgelist_anand` - 
 
-# had to create this function to test.
+## Main functions:
 
-get.name <- function (n) {
-  nameID.matrix <- matrix(NA, 1, length(n)) # matrix for storage
-  
-  # Name in characters to nameID 
-  
-  for (i in 1:length(n)){
-    nameID.matrix[1,i] <- name.basic[which(name.basic$nconst == n[i]), 2]
-  }
-  
-  return(nameID.matrix) # outputs 2 corresponding name IDs 
-}
+`functionsTitle.R`
 
-# Function: Use Name and Title ID -----------------------------------------
+1. `get.nameID(name.input)` - This function accepts a user input (non-unique strings of characters) and matches it with the attribute `primaryName` in the dataset `name.basic`. The function will output a list of possible unique nameIDs corresponding to each of the names provided by the user in the form of a matrix. Note: User needs to supply the correct first and last names of the actors (according to IMDb).
 
-name.title.id <- function (n1, n2) {
-  # nameID <- c(n1, n2) # this will be the input converted to the name ID
-  # name.index <- sapply(1:length(nameID), function (x) which(colnames(staff_movie) == nameID[x])) #gives name indices 
-  # df_interest <- data.frame(staff_movie[,name.index])
-  # 
-  # # get nameID to recognize in SQL syntax
-  # getQuote <- names(sqldf("SELECT * FROM df_interest WHERE 1 = 0"))
-  # 
-  # # generalize the query
-  # query <- paste0("SELECT ", getQuote[1]," FROM df_interest INTERSECT SELECT ", getQuote[2], " FROM df_interest")
-  # intersect.sql <- sqldf(query)
-  # return(intersect.sql)
-  
-  x <- staff_movie[,colnames(staff_movie) == n1]
-  y <- staff_movie[,colnames(staff_movie) == n2]
-  return(data.frame(int=intersect(x,y)))
-}
+2. `name.title.id(nameID1, nameID2)` - This function accepts 2 nameIDs and uses the dataset `staff_movies`. It find the titleIDs that are a result of the intersection between the 2 nameIDs.
 
-# n <-  c("nm0760044", "nm0665381")
+3. `get.title(titleIDs)` - This function takes titleIDs and, using the `title.basic` dataset, outputs readable strings of movie titles.
 
+`Get.Unique.NameID.R`
 
-# TitleID to Title Name --------------------------------------------------------
+4. `specNameID(name.input, title.input)` - Input is a string provided by the user. One is the name and the other is a specific movie name that the person is known for. This function is necessary as name strings are not unique. Using the column `knownForTitles` in `name.basic`, a unique nameID can be identified. 
 
-get.title <- function(titleID){
-  
-  if (sum(is.na(titleID)) == 0){
-    titleID <- titleID
-  } else {
-    titleID <- titleID[complete.cases(titleID),]
-  }
-  
-  titles <- matrix(NA, 1, 1000)
-  
-  for (i in 1:length(titleID)){
-    titles[1,i] <- title.basic[which(title.basic$tconst == titleID[i]), 3]
-    title.name <- titles[!is.na(titles)]
-  }
-  
-  return(title.name)
-}
+`intersectionFunc.R`
 
+5. `name.title.characters(names, titlesKnown)` - Takes in 2 names and the corresponding movie titles they are known for. This uses the functions `specNameID(name.input, title.input)`, `get.nameID(name.input)`, `name.title.id(nameID1, nameID2)` and  `get.title(titleIDs)`
+
+`functionsGraph.R`
+
+6. `get_first_degree(family)` -  
+
+## Test Functions:
+
+1. `get.name(nameIDs)` - The function accepts unique nameIDs and returns the corresponding name. This function was created to test `get.nameID(names)`.
