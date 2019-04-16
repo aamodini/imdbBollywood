@@ -9,15 +9,25 @@ library(RColorBrewer)
 library(dplyr)
 
 # setwd("/Users/gupta88/427project/iGraph")
-all.name.basic <- as.data.frame(fread("name.basics.tsv")) # for nameID to name labels
-edgelist <- read.csv("Edgelist.csv", header = TRUE, as.is = T) # assume all recorded edges
-IC <- read.csv("IC-nodes-file.csv", header = TRUE) # the nodes with prominent last names
+all.name.basic <- as.data.frame(readRDS("../IMDbRDS/name.basic.rds")) # for nameID to name labels
+IC <- as.data.frame(readRDS("../IMDbRDS/IC-nodes-file.rds")) # the nodes with prominent last names
+
+
+# Pick Edgelist -----------------------------------------------------------
+
+pick.df <- function(family){
+  edgelist <- switch(family,
+                     Kapoor = as.data.frame(readRDS("../IMDbRDS/edgelist_kapoor.rds")),
+                     Anand = as.data.frame(readRDS("../IMDbRDS/edgelist_anand.rds")))
+  return(edgelist)
+}
+  
 
 
 # First Degree ----------------------------------------------------------------
 
 get_first_degree <- function(family){
-  
+  edgelist <- pick.df(family)
   fam_name <-  unique(IC$id[IC$last_name == family])
   fam_name <- fam_name[grep("nm.*", fam_name)] 
   fam_name <- droplevels(fam_name) # eliminate nf IDs

@@ -1,5 +1,5 @@
 library(shiny)
-# source("functionsGraph.R")
+source("functionsGraph.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -8,15 +8,15 @@ ui <- fluidPage(
    navbarPage (
      "Network Graphs",
        tabPanel("Point Network",  
-                selectInput("simpleNet", "Choose Family", unique(IC$last_name)),
+                selectInput("simpleNet", "Choose Family", c("Kapoor", "Anand")),
                 visNetworkOutput("network1")),
        tabPanel("Community Detection Graph",  
-                selectInput("comDet", "Choose Family", unique(IC$last_name)),
+                selectInput("comDet", "Choose Family", c("Kapoor", "Anand")),
                 plotOutput("plot", height = "800px")),
       tabPanel("Community Members", 
                sidebarLayout(
                  sidebarPanel(
-                   selectInput("cm", "Choose Family", unique(IC$last_name))
+                   selectInput("cm", "Choose Family", c("Kapoor", "Anand"))
                    ),
                mainPanel(
                  tableOutput("comMem")
