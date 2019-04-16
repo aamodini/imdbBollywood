@@ -160,6 +160,8 @@ get.sim.movie <- function(names,titlesKnown){
   sim.movie$decades <- cut(as.numeric(sim.movie$startYear), 
                            breaks = seq(1920, 2020, 10),
                            labels = paste(seq(1920, 2010, 10),"s",sep = ""))
+  
+  sim.movie %>% arrange(startYear)
   return(sim.movie)
 }
 
