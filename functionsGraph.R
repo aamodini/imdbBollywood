@@ -66,46 +66,11 @@ get_nodes <- function(family){
   ids <- union(edges$from, edges$to)
   names <- get.name(ids, family)
   nodes <- data.table(id = ids, label = names)
+  return(nodes)
 }
 
 
-# Community Detection -----------------------------------------------------
 
-communityDetection <- function(family){
-  source("http://michael.hahsler.net/SMU/ScientificCompR/code/map.R")
-  fam_edge <- get_first_degree(family)
-  fam_edge_net <- fam_edge[fam_edge$weight >= 3,]
-  fam_net <- graph_from_data_frame(d=fam_edge_net, 
-                                   vertices = unique(union(fam_edge_net$from, fam_edge_net$to)),
-                                    directed= F)
-  layout <- layout.forceatlas2(fam_net, k=500, gravity=1, iterations=300, directed = FALSE, plotlabels = FALSE)
-  
-  community <- cluster_louvain(fam_net)
-  pr <- page.rank(fam_net)$vector
-  btw <- betweenness(fam_net)
-  
-  
-  colors <- brewer.pal(8,"Set1")
-  vertex.col <- colors[community$membership]
-  
-  edge.start <- ends(fam_net,es=E(fam_net),names= F)[,1]
-  el.col <- vertex.col[edge.start]
-  igraph.options(plot.layout= layout,
-                 rescale = FALSE,
-                 vertex.label.family="Helvetica",
-                 vertex.label.font=1,
-                 vertex.frame.color="gray70",
-                 vertex.label.cex=map(btw,c(1,4))/3.5,
-                 vertex.size=map(pr,c(5,16)),
-                 vertex.label = NA,
-                 vertex.label.color="black",
-                 vertex.color= vertex.col,
-                 edge.width=E(fam_net)$Weight/6,
-                 edge.curved=0.4, edge.color= el.col)
-  
-  output <- list(fam_net, layout, unique(vertex.col), unique(community$membership))
-  return(output)
-}
 
 # Community Members -------------------------------------------------------
 
@@ -183,7 +148,46 @@ by.community <- function(family){
   return(full_df)
 }
 
+# Community Detection -----------------------------------------------------
 
+communityDetection <- function(family){
+  source("http://michael.hahsler.net/SMU/ScientificCompR/code/map.R")
+  fam_edge <- get_first_degree(family)
+  fam_edge_net <- fam_edge[fam_edge$weight >= 3,]
+  fam_net <- graph_from_data_frame(d=fam_edge_net, 
+                                   vertices = unique(union(fam_edge_net$from, fam_edge_net$to)),
+                                   directed= F)
+  layout <- layout.forceatlas2(fam_net, k=500, gravity=1, iterations=300, directed = FALSE, plotlabels = FALSE)
+  
+  community <- cluster_louvain(fam_net)
+  pr <- page.rank(fam_net)$vector
+  btw <- betweenness(fam_net)
+  
+  
+  
+  colors <- brewer.pal(8,"Set1")
+  vertex.col <- colors[community$membership]
+  max_pr_community <- as.data.frame(topcommunityMembers(family))
+  vertices_fam_net <- labels(V(fam_net))
+  label <- get.name(vertices_fam_net, family)
+  
+  edge.start <- ends(fam_net,es=E(fam_net),names= F)[,1]
+  el.col <- vertex.col[edge.start]
+  igraph.options(plot.layout= layout,
+                 rescale = FALSE, 
+                 vertex.label = ifelse(vertices_fam_net %in% max_pr_community$labels, label, " "),
+                 vertex.label.family="Helvetica",
+                 vertex.label.font=1,
+                 vertex.label.color="black",
+                 vertex.label.cex=map(btw,c(1,4))/3,
+                 vertex.frame.color="gray80",
+                 vertex.size=map(pr,c(5,16)),
+                 vertex.color= vertex.col,
+                 edge.curved=0.5, edge.color= el.col)
+  
+  output <- list(fam_net, layout, unique(vertex.col), unique(community$membership))
+  return(output)
+}
 
 
 

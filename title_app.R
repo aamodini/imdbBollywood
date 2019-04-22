@@ -3,6 +3,11 @@ library(DT)
 source("functionsTitle.R")
 
 # Define UI for application that draws a histogram
+# names <- c("Hrishikesh Mukherjee", "Sachin Bhowmick")
+# titlesKnown <- c("Anand","Jhooth Bole Kauwa Kaate")
+# names <- c("Amitabh Bachchan","Jaya Bhaduri")
+# titlesKnown <- c("Black","Kal Ho Naa Ho")
+
 ui <- fluidPage(
    
    # Application title
@@ -30,12 +35,16 @@ ui <- fluidPage(
    
    plotOutput("pieCharts")
    
-   
-   
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  
+  output$movieList <- renderDataTable({
+    n <- c("primaryTitle","startYear")
+    get.sim.movie(c(input$nm1, input$nm2), c(input$tt1, input$tt2))[[1]][,n]
+  })
+  
   output$timeLine <- renderPlot({
     ggplot(timeLine.df(c(input$nm1, input$nm2), c(input$tt1, input$tt2)), aes(x=Var1, y=Freq, group=1)) +
       geom_point(stat='summary', fun.y=sum) + 
@@ -43,10 +52,7 @@ server <- function(input, output) {
       expand_limits(y = 0) + 
       labs(x = "Decade", y = "Number of co-op movies", title = "Movies Over Time")
   })
-  output$movieList <- renderDataTable({
-    n <- c("primaryTitle","startYear")
-    get.sim.movie(c(input$nm1, input$nm2), c(input$tt1, input$tt2))[,n]
-  })
+  
   output$pieCharts <- renderPlot({
     ggplot(pieCharts.df(c(input$nm1, input$nm2), c(input$tt1, input$tt2)), aes(x="", y=Freq, fill=Var1))+
       geom_bar(stat = "identity", position = position_fill()) +

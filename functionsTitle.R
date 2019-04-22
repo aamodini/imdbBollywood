@@ -162,12 +162,13 @@ get.sim.movie <- function(names,titlesKnown){
                            labels = paste(seq(1920, 2010, 10),"s",sep = ""))
   
   sim.movie %>% arrange(startYear)
-  return(sim.movie)
+  out <- list(sim.movie, movie1, movie2)
+  return(out)
 }
 
 timeLine.df <- function(names, titlesKnown){
   
-  sim.movie <- get.sim.movie(names, titlesKnown)
+  sim.movie <- get.sim.movie(names, titlesKnown)[[1]]
   # count number of movies in each decades
   plot.df <- as.data.frame(table(sim.movie$decades))
   
@@ -205,10 +206,10 @@ rate_cat <- function(movie.df) {
 
 pieCharts.df <- function(names, titlesKnown){
   
-  sim.movie <- get.sim.movie(names, titlesKnown)
-  sim.movie <- rate_cat(sim.movie)
-  movie1 <- rate_cat(movie1)
-  movie2 <- rate_cat(movie2)
+  movies <- get.sim.movie(names, titlesKnown)
+  sim.movie <- rate_cat(movies[[1]])
+  movie1 <- rate_cat(movies[[2]])
+  movie2 <- rate_cat(movies[[3]])
   
   # create plot df
   plot.df <- as.data.frame(table(sim.movie$rate))
@@ -226,20 +227,18 @@ pieCharts.df <- function(names, titlesKnown){
     mutate(pct = round((Freq / sum(Freq)*100),0))
   plot.df$pct[plot.df$Freq == 0] <- NA
   
-  # plot a pie chart
-  blank_theme <- theme_minimal()+
-    theme(
-      axis.title.x = element_blank(),
-      axis.title.y = element_blank(),
-      panel.grid=element_blank(),
-      axis.ticks = element_blank(),
-      plot.title=element_text(size=14, face="bold")
-    )
-  
   return(plot.df)
 }
 
-
+# plot a pie chart
+blank_theme <- theme_minimal()+
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold")
+  )
 
 
 
